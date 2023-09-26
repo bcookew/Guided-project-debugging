@@ -76,18 +76,16 @@ while (transactions > 0)
     Console.WriteLine($"\t Using {paymentFives} five dollar bills");
     Console.WriteLine($"\t Using {paymentOnes} one dollar bills");
 
-    // MakeChange manages the transaction and updates the till 
-    string transactionMessage = MakeChange(itemCost, cashTill, paymentTwenties, paymentTens, paymentFives, paymentOnes);
-
-    // Backup Calculation - each transaction adds current "itemCost" to the till
-    if (transactionMessage == "transaction succeeded")
+    try
     {
+        // MakeChange manages the transaction and updates the till 
+        MakeChange(itemCost, cashTill, paymentTwenties, paymentTens, paymentFives, paymentOnes);
         Console.WriteLine($"Transaction successfully completed.");
         registerCheckTillTotal += itemCost;
     }
-    else
+    catch (InvalidOperationException ex)
     {
-        Console.WriteLine($"Transaction unsuccessful: {transactionMessage}");
+        Console.WriteLine("Could not complete transaction: " + ex.Message);
     }
 
     Console.WriteLine(TillAmountSummary(cashTill));
@@ -125,7 +123,7 @@ static string MakeChange(int cost, int[] cashTill, int twenties, int tens = 0, i
     int changeNeeded = amountPaid - cost;
 
     if (changeNeeded < 0)
-        transactionMessage = "Not enough money provided.";
+        throw new InvalidOperationException("InvalidOperationException: Not enough money provided.");
 
     Console.WriteLine("Cashier Returns:");
 
@@ -158,7 +156,7 @@ static string MakeChange(int cost, int[] cashTill, int twenties, int tens = 0, i
     }
 
     if (changeNeeded > 0)
-        transactionMessage = "Can't make change. Do you have anything smaller?";
+        throw new InvalidOperationException("InvalidOperationExcetption: The till is unable to make the correct change?");
 
     if (transactionMessage == "")
         transactionMessage = "transaction succeeded";
